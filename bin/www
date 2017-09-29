@@ -7,7 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('novel:server');
 var http = require('http');
-var socketTool = require('../util/Socket');
+// var socketTool = require('../util/Socket');
 
 
 /**
@@ -23,7 +23,7 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
-socketTool.getSocket(server);
+// socketTool.getSocket(server);
 
 /**
  * Listen on provided port, on all network interfaces.
