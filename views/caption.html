@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>{{ caption.title }}</title>
+	{{ include './tpl/css.html'}}
+	<style type="text/css">
+		
+		.prev,.floder,.next{
+			width:33%;
+			display:inline-block;
+			float:left;
+			text-align:center;
+			line-height:40px;
+		}
+		.prev a,.floder a,.next a{
+			text-decoration:underline;
+			color:#49e;
+			cursor:pointer;
+		}
+
+	</style>
+</head>
+<body>
+	<div class="top">
+		<div class="prev">
+			{{ if prev != ''}}
+			<a href="/index/{{prev}}.html">上一页</a>
+			{{ /if }}
+		</div>
+		<div class="floder"><a href="/index?id={{caption.novel}}">返回章节目录</a></div>
+		<div class="next">
+			{{ if next != '' }}
+			<a href="/index/{{next}}.html">下一页</a>
+			{{ /if }}
+		</div>
+	</div>
+
+	<div class="byy-clear">
+		{{@ caption.content }}
+	</div>
+	
+	<div class="bottom">
+		<div class="prev">
+			{{ if prev != ''}}
+			<a href="/index/{{prev}}.html">上一页</a>
+			{{ /if }}
+		</div>
+		<div class="floder"><a href="/index?id={{caption.novel}}">返回章节目录</a></div>
+		<div class="next">
+			{{ if next != '' }}
+			<a href="/index/{{next}}.html">下一页</a>
+			{{ /if }}
+		</div>
+	</div>
+</body>
+</html>
