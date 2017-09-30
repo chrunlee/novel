@@ -28,6 +28,7 @@ var CrabUtil = function(opts){
 
 CrabUtil.getNovel = function(cb){
 	NovelDao.getData('getFirst',{},function(res){
+		console.log(res);
 		if(res.length > 0){
 			INS.novel = res[0];
 			cb(null,null);
@@ -127,8 +128,8 @@ CrabUtil.start = function(){
 					CrabUtil.start();
 				});
 			}else{
+				console.log(err.message);
 				setTimeout(function(){
-					console.log('10分钟后继续执行')
 					CrabUtil.start();
 				},10*60*1000);
 			}
