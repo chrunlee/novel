@@ -37,7 +37,7 @@
 		height:50px;
 		position:absolute;
 		top:0px;
-		left:-60px;
+		left:-110px;
 		background-color: white;
 		line-height:50px;
 		text-align:center;
@@ -49,14 +49,13 @@
 	.tool.tool-show{right:10px;}
 	.tool.tool-show .add-book{
 		top:-50px;
-		left:10px;
+		left:0px;
 	}
 	.book-info{
 		float:left;
 		background-color: white;
 		opacity: 1;
 		width:360px;
-		margin-left:10px;
 		border-radius: 5px;
 	}
 	.byy-label{width:70px;}
@@ -80,6 +79,9 @@
 		}
 		.caption-block{
 			width:100% !important;
+		}
+		.tool{
+			right:-100%;
 		}
 	}
 	input{
@@ -141,7 +143,7 @@
 		</div>
 	</div>
 	<div class="body-wrap2" id="caption">
-		<a href="/index"><h3 id="title"></h3></a>
+		<h3 filter="showBook" id="title"></h3>
 		<div id="caption-content">
 			
 
@@ -151,7 +153,6 @@
 </html>
 {{ include './tpl/js.html' }}
 <script type="text/javascript"></script>
-<script type="text/javascript" src="/plugins/socket/socket.io-1.3.7.js"></script>
 <script type="text/javascript">
 
 	var toggleBody = function(flag){
@@ -217,6 +218,8 @@
 						renderCaption(resobj);
 					}
 				});
+			}else{
+				actives.toggleBody(false);
 			}
 		}
 	};
