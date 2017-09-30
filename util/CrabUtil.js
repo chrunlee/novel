@@ -28,8 +28,13 @@ var CrabUtil = function(opts){
 
 CrabUtil.getNovel = function(cb){
 	NovelDao.getData('getFirst',{},function(res){
-		INS.novel = res[0];
-		cb(null,null);
+		if(res.length > 0){
+			INS.novel = res[0];
+			cb(null,null);
+		}else{
+			cb(new Error("没有需要更新的书籍"),null);	
+		}
+				
 	});
 };
 
@@ -117,9 +122,16 @@ CrabUtil.start = function(){
 		//有中断或已完成
 		if(err){
 			//有报错？更新该，重新开始
-			NovelDao.getData('updateUpdate',{update : new Date(),id : INS.novel.id},function(){
-				CrabUtil.start();
-			});
+			if(INS.novel){
+				NovelDao.getData('updateUpdate',{update : new Date(),id : INS.novel.id},function(){
+					CrabUtil.start();
+				});
+			}else{
+				setTimeout(function(){
+					console.log('10分钟后继续执行')
+					CrabUtil.start();
+				},10*60*1000);
+			}
 		}else{
 			//完成
 			NovelDao.getData('updateDone',{isdone : '1',id : INS.novel.id},function(){
