@@ -74,7 +74,7 @@
 		text-align:center;
 	}
 	@media screen and (max-width:768px){
-		.book-info{
+		/*.book-info{
 			width:110% !important;
 		}
 		.caption-block{
@@ -82,6 +82,9 @@
 		}
 		.tool{
 			right:-100%;
+		}*/
+		.tool{
+			display:none;
 		}
 	}
 	input{
@@ -206,7 +209,7 @@
 		},
 		showBook : function(ev){
 			var id = this.attr('id'),title = this.attr('title');
-			if(!byy.isEmpty(id)){
+			if(!byy.isEmpty(id) && id != 'title'){
 				var lindex = byy.win.load(1);
 				$.ajax({
 					url : '/index/getCaption',
