@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>今天吃啥呢?</title>
+	{{ include './tpl/css.html' }}
+	<style type="text/css">
+		
+		.tip{
+			background-color:#49e;
+			padding:20px;
+			color:white;
+			font-size:16px;
+			font-weight:bold;
+		}
+		#canvas{
+			margin:50px auto;
+		}
+		.content{text-align:center;}
+		input{
+			height:30px;line-height:30px;
+			width:100%;border:1px solid #ccc;outline:none;
+		}
+		.item{padding:20px 100px;}
+		.item li{padding:10px 30px;position:relative;display:inline-block;float:left;cursor:pointer;border-radius:5px;margin-right:20px;border:1px solid #49e;}
+		.item li:hover{background-color:#49e;opacity:0.7;color:white;}
+		.item li>i{display:none;position:absolute;right:-10px;top:-10px;font-size:20px;color:red;width:20px;height:20px;text-align:center;line-height:20px;background-color:red;opacity:0.5;color:white;border-radius:50%;}
+		.item li:hover i{display:inline-block;}
+		#add{display:block;margin:10px 0px;}
+	</style>
+</head>
+<body>
+	<div class="tip">
+		不知道今天吃什么？没关系...让上帝来决定！
+	</div>
+	<div class="content">
+		<canvas id="canvas" width="400px;" height="400px;"></canvas>
+		<div class="btn">
+			<span class="byy-btn danger" id="start">开始吧</span>
+		</div>
+	</div>
+	<div class="item">
+		<ul id="ul">
+			
+		</ul>
+		<input type="text" name="name" id="name">
+		<span class="byy-btn small" id="add">添加附近的吃的</span>
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+
+	function setCookie(name,value){
+		var Days = 30;
+		var exp = new Date();
+		exp.setTime(exp.getTime() + Days*24*60*60*1000);
+		document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString();
+	}
+	function getCookie(name){
+		var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+		if(arr=document.cookie.match(reg))
+		return unescape(arr[2]);
+		else
+		return null;
+	}
+	function renderArr (arr){
+		var ul = document.getElementById('ul');
+		var html = '';
+		arr.forEach(function(item){
+			html += '<li><i class="byyicon icon-close"></i>'+item+'</li>';
+		});
+		ul.innerHTML = html;
+	}
+	var canvas = document.getElementById('canvas');
+	var ctx = canvas.getContext('2d');
+	//获得cookie的内容，如果没有就默认
+	var defaultArr = ['睡觉'];
+	var arr = getCookie('jintianchishenme');
+	if(arr == null){
+		arr = defaultArr;
+		setCookie('jintianchishenme','睡觉');
+	}else{
+		arr = arr.split('||');
+	}
+	renderArr(arr);
+	arr = arr.map(function(item){
+		return {
+			text : item,
+			color : getColor()
+		}
+	});
+	if(canvas.getContext){
+		var r = 200,w = r*2,rr = r*0.2;
+		drawContent(ctx,r,arr,0);
+	}
+	var time = 60;
+	var angle = 0;
+	var adda = Math.random()*0.5+1;
+	function gogogo(){
+		angle += adda;
+		adda -= 0.01;
+		if(adda <= 0.01){
+			over();
+		}else{
+			setTimeout(function(){
+				drawContent(ctx,r,arr,angle)	
+				gogogo();
+			},time);
+		}
+	}
+	function init(){
+		adda = Math.random()*0.5+0.5;
+		angle = 0;
+	}
+	function getRes(){
+		var aa = angle/Math.PI/2*360 + 270;//度数
+		var leftd = aa % 360 ;
+		//计算度数
+		var len = arr.length;
+		var ave = 360 / len;
+		var idx = Math.floor(leftd / ave);
+		return arr[idx];
+	}
+
+	function sector (ctx,x, y, radius, sDeg, eDeg,item) {
+		// 初始保存
+		sDeg = Math.PI*2*(sDeg/360);
+		eDeg = Math.PI*2*(eDeg/360)
+		
+		ctx.save();
+		// 位移到目标点
+		
+		ctx.translate(x, y);
+		
+		ctx.beginPath();
+		// 画出圆弧
+		ctx.arc(0,0,radius,sDeg, eDeg);
+		// 再次保存以备旋转
+		ctx.save();
+		// 旋转至起始角度
+		ctx.rotate(eDeg);
+		// 移动到终点，准备连接终点与圆心
+		ctx.moveTo(radius,0);
+		// 连接到圆心
+		ctx.lineTo(0,0);
+		// 还原
+		ctx.restore();
+		// 旋转至起点角度
+		ctx.rotate(sDeg);
+		// 从圆心连接到起点
+		ctx.lineTo(radius,0);
+		ctx.closePath();
+
+		ctx.fillStyle = item.color;
+		ctx.fill();
+		ctx.restore();
+		ctx.save();
+		ctx.translate(x,y);
+		ctx.fillStyle = '#000';
+		ctx.direction = 'ltr';
+		ctx.font="24px 微软雅黑";
+		var textInfo = ctx.measureText(item.text);
+		var textWidth = textInfo.width;
+		ctx.rotate(eDeg + (Math.PI/2 - (eDeg-sDeg)/2));
+		ctx.fillText(item.text,-textWidth/2,-150);
+		ctx.restore();
+	};
+	function drawArrow (r,angle){
+		//画箭头
+		ctx.save();
+		ctx.fillStyle = 'red';
+		ctx.translate(r,r);
+		ctx.rotate(angle);
+		ctx.beginPath();
+		ctx.moveTo(r*0.1,0);
+		ctx.lineTo(0,-r*0.7);
+		ctx.lineTo(-r*0.1,0);
+		ctx.fill();
+		ctx.restore();
+	}
+	function drawContent (ctx,r,arr,ro){
+		ctx.clearRect(0,0,r*2,r*2);
+		var radius = 360/arr.length;//平均每个的角度
+
+		//1.画第一个
+		ctx.save();
+		ctx.beginPath();
+		ctx.moveTo(r,r);
+		//根据角度计算坐标
+		ctx.strokeStyle = 'red'
+		var base = 'aaa';
+		for(var i=0;i<arr.length;i++){
+			var item = arr[i];
+			var angle = i * radius;
+			var next = (i+1)*radius;
+			if(next >= 360){
+				next = 360;
+			}
+			sector(ctx,r,r,r,angle,next,item);
+		}
+		//内圆
+		ctx.beginPath();
+		ctx.arc(r,r,rr,0,Math.PI*2);
+		ctx.strokeStyle = '#fff';
+		ctx.fillStyle = 'red';
+		ctx.fill();
+		drawArrow(r,ro);
+
+		
+	}
+	function over(){
+		var res = getRes();
+		alert('今天就['+res.text+']吧，不用考虑了！gogogog~');
+		init();
+	}
+	function getColor(){
+		var a = 100 + Math.floor(Math.random()*100);
+		var b = 100 + Math.floor(Math.random()*100);
+		var c = 100 + Math.floor(Math.random()*100);
+		return 'rgb('+a+','+b+','+c+')';
+	}
+	document.getElementById('start').onclick = function(){
+		gogogo();
+	}
+	document.getElementById('add').onclick = function(){
+		var name = document.getElementById('name');
+		var val = name.value;
+		if(val == ''){
+			alert('随便写点啥');
+		}else{
+			var co = getCookie('jintianchishenme');
+			co = co + '||' + val;
+			setCookie('jintianchishenme',co);
+			arr = co.split('||');
+			arr = arr.map(function(item){
+				return {
+					text : item ,
+					color : getColor()
+				}
+			});
+			renderArr(arr);
+			name.value = '';
+			drawContent(ctx,r,arr,0);
+		}
+	}
+</script>

@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var eat = require('./routes/eat');
 
 var app = express();
 
@@ -31,7 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/',require('./routes/jump'));
 app.use('/index/', index);
 app.use('/users', users);
-
+app.use('/eat',eat);
 //执行抓取
 var crabUtil = require('./util/CrabUtil');
 crabUtil.start();
