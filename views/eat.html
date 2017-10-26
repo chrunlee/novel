@@ -67,9 +67,10 @@
 		var ul = document.getElementById('ul');
 		var html = '';
 		arr.forEach(function(item){
-			html += '<li><i class="byyicon icon-close"></i>'+item+'</li>';
+			html += '<li>'+item+'</li>';
 		});
 		ul.innerHTML = html;
+		bindEvent();
 	}
 	var canvas = document.getElementById('canvas');
 	var ctx = canvas.getContext('2d');
@@ -210,7 +211,9 @@
 	}
 	function over(){
 		var res = getRes();
-		alert('今天就['+res.text+']吧，不用考虑了！gogogog~');
+		if(res){
+			alert('今天就['+res.text+']吧，不用考虑了！gogogog~');
+		}
 		init();
 	}
 	function getColor(){
@@ -232,15 +235,38 @@
 			co = co + '||' + val;
 			setCookie('jintianchishenme',co);
 			arr = co.split('||');
+			renderArr(arr);
 			arr = arr.map(function(item){
 				return {
 					text : item ,
 					color : getColor()
 				}
 			});
-			renderArr(arr);
 			name.value = '';
 			drawContent(ctx,r,arr,0);
 		}
+	}
+	function bindEvent(){
+	var list = document.querySelectorAll('li');
+	list.forEach(function(li){
+		li.onclick = function(ev){
+			var dd = ev.currentTarget || ev.srcElement;
+			var name = dd.innerText;
+			var co = getCookie('jintianchishenme');
+			co = co.split('||');
+			var cot = [];
+			co.forEach(function(item){
+				if(item !== name){
+					cot.push(item);
+				}
+			});
+			renderArr(cot);
+			setCookie('jintianchishenme',cot.join('||'))
+			arr = cot.map(function(item){
+				return {text :item,color:getColor()}
+			});
+			drawContent(ctx,r,arr,0);
+		}
+	});
 	}
 </script>
